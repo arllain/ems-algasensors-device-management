@@ -11,7 +11,7 @@ class TSIDTest {
 
 
     @Test
-    public void shouldGenerateTSID() {
+    void shouldGenerateTSID() {
 
         TSID tsid = IdGenerator.generateTSID();
 
