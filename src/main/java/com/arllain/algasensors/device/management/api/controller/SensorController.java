@@ -1,6 +1,7 @@
 package com.arllain.algasensors.device.management.api.controller;
 
 import com.arllain.algasensors.device.management.api.model.SensorInput;
+import com.arllain.algasensors.device.management.api.model.SensorOuput;
 import com.arllain.algasensors.device.management.common.IdGenerator;
 import com.arllain.algasensors.device.management.domain.model.SendorId;
 import com.arllain.algasensors.device.management.domain.model.Sensor;
@@ -18,7 +19,7 @@ public class SensorController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public Sensor create (@RequestBody SensorInput sensorInput) {
+    public SensorOuput create (@RequestBody SensorInput sensorInput) {
         Sensor sensor = Sensor.builder()
                 .id(new SendorId(IdGenerator.generateTSID()))
                 .name(sensorInput.getName())
@@ -29,6 +30,16 @@ public class SensorController {
                 .enabled(false)
                 .build();
 
-        return sensorRepository.saveAndFlush(sensor);
+        sensor = sensorRepository.saveAndFlush(sensor);
+
+        return SensorOuput.builder()
+                .id(sensor.getId().getValue())
+                .name(sensor.getName())
+                .ip(sensor.getIp())
+                .location(sensor.getLocation())
+                .protocol(sensor.getProtocol())
+                .model(sensor.getModel())
+                .enabled(sensor.getEnabled())
+                .build();
     }
 }
