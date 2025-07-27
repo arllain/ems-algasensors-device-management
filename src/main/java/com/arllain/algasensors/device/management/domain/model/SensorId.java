@@ -11,21 +11,21 @@ import java.util.Objects;
 @Getter
 @Embeddable
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class SendorId implements Serializable {
+public class SensorId implements Serializable {
 
     private TSID value;
 
-    public SendorId(TSID value) {
+    public SensorId(TSID value) {
         Objects.requireNonNull(value);
         this.value = value;
     }
 
-    public SendorId(Long value) {
+    public SensorId(Long value) {
         Objects.requireNonNull(value);
         this.value = TSID.from(value);
     }
 
-    public SendorId(String value) {
+    public SensorId(String value) {
         Objects.requireNonNull(value);
         this.value = TSID.from(value);
     }
