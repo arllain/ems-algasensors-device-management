@@ -1,11 +1,8 @@
 package com.arllain.algasensors.device.management.api.client.impl;
 
-import com.arllain.algasensors.device.management.api.client.SensorMonitorinClientBadGatewayException;
+import com.arllain.algasensors.device.management.api.client.RestClientFactory;
 import com.arllain.algasensors.device.management.api.client.SensorMonitoringClient;
 import io.hypersistence.tsid.TSID;
-import org.springframework.http.HttpStatusCode;
-import org.springframework.http.client.ClientHttpRequestFactory;
-import org.springframework.http.client.SimpleClientHttpRequestFactory;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestClient;
 
@@ -14,20 +11,8 @@ public class SensorMonitoringClientImpl implements SensorMonitoringClient {
 
     private final RestClient restClient;
 
-    public SensorMonitoringClientImpl(RestClient.Builder restClientBuilder) {
-        this.restClient = restClientBuilder.baseUrl("http://localhost:8082")
-                .requestFactory(generateClientHttpRequestFactory())
-                .defaultStatusHandler(HttpStatusCode::isError, ((request, response) -> {
-                    throw new SensorMonitorinClientBadGatewayException();
-                }))
-                .build();
-    }
-
-    private ClientHttpRequestFactory generateClientHttpRequestFactory() {
-        SimpleClientHttpRequestFactory factory = new SimpleClientHttpRequestFactory();
-//        factory.setReadTimeout(Duration.ofSeconds(5));
-//        factory.setConnectTimeout(Duration.ofSeconds(3));
-        return factory;
+    public SensorMonitoringClientImpl(RestClientFactory factory) {
+        this.restClient = factory.temperatureMonitoringRestClient();
     }
 
     @Override
