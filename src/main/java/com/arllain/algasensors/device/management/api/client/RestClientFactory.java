@@ -7,8 +7,6 @@ import org.springframework.http.client.SimpleClientHttpRequestFactory;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestClient;
 
-import java.time.Duration;
-
 @Component
 @RequiredArgsConstructor
 public class RestClientFactory {
@@ -27,8 +25,8 @@ public class RestClientFactory {
 
     private ClientHttpRequestFactory generateClientHttpRequestFactory() {
         SimpleClientHttpRequestFactory factory = new SimpleClientHttpRequestFactory();
-        factory.setReadTimeout(Duration.ofSeconds(5));
-        factory.setConnectTimeout(Duration.ofSeconds(3));
+//        factory.setReadTimeout(Duration.ofSeconds(5));
+//        factory.setConnectTimeout(Duration.ofSeconds(3));
         return factory;
     }
 

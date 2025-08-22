@@ -1,8 +1,10 @@
 package com.arllain.algasensors.device.management.api.controller;
 
 import com.arllain.algasensors.device.management.api.client.SensorMonitoringClient;
+import com.arllain.algasensors.device.management.api.model.SensorDetailOuput;
 import com.arllain.algasensors.device.management.api.model.SensorInput;
-import com.arllain.algasensors.device.management.api.model.SensorOuput;
+import com.arllain.algasensors.device.management.api.model.SensorMonitoringOutput;
+import com.arllain.algasensors.device.management.api.model.SensorOutput;
 import com.arllain.algasensors.device.management.common.IdGenerator;
 import com.arllain.algasensors.device.management.domain.model.Sensor;
 import com.arllain.algasensors.device.management.domain.model.SensorId;
@@ -25,22 +27,36 @@ public class SensorController {
     private final SensorMonitoringClient sensorMonitoringClient;
 
     @GetMapping
-    public Page<SensorOuput> search(@PageableDefault Pageable pageable) {
+    public Page<SensorOutput> search(@PageableDefault Pageable pageable) {
         Page<Sensor> sensors = sensorRepository.findAll(pageable);
         return sensors.map(this::convertToModel);
     }
 
     @GetMapping("{sensorId}")
-    public SensorOuput getOne(@PathVariable TSID sensorId) {
+    public SensorOutput getOne(@PathVariable TSID sensorId) {
         Sensor sensor = sensorRepository.findById(new SensorId(sensorId))
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND))
         ;
         return convertToModel(sensor);
     }
 
+    @GetMapping("{sensorId}/detail")
+    public SensorDetailOuput getWithDetail(@PathVariable TSID sensorId) {
+        Sensor sensor = sensorRepository.findById(new SensorId(sensorId))
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
+        SensorMonitoringOutput detailgOutput = sensorMonitoringClient.getDetail(sensorId);
+        SensorOutput sensorOutput = convertToModel(sensor);
+
+        return SensorDetailOuput
+                .builder()
+                .monitoring(detailgOutput)
+                .sensor(sensorOutput)
+                .build();
+    }
+
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public SensorOuput create(@RequestBody SensorInput sensorInput) {
+    public SensorOutput create(@RequestBody SensorInput sensorInput) {
         Sensor sensor = Sensor.builder()
                 .id(new SensorId(IdGenerator.generateTSID()))
                 .name(sensorInput.getName())
@@ -89,8 +105,8 @@ public class SensorController {
         sensorMonitoringClient.disableMonitoring(sensorId);
     }
 
-    private SensorOuput convertToModel(Sensor sensor) {
-        return SensorOuput.builder()
+    private SensorOutput convertToModel(Sensor sensor) {
+        return SensorOutput.builder()
                 .id(sensor.getId().getValue())
                 .name(sensor.getName())
                 .ip(sensor.getIp())
